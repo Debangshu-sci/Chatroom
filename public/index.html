@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Edge/Mobile Browser Optimizations -->
+    <meta name="theme-color" content="#fdfdff" id="meta-theme-color">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
     <title>VibeChat | Real-Time Messaging</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -22,6 +29,7 @@
             --panel-bg: #ffffff;
             --border-color: #e5e7eb;
             --input-bg: #f9fafb;
+            --scrollbar-thumb: rgba(0,0,0,0.15);
         }
 
         [data-theme="dark"] {
@@ -33,11 +41,27 @@
             --chat-bg: #111827;
             --panel-bg: #1f2937;
             --border-color: #374151;
-            --input-bg: #111827;
+            --input-bg: #1f2937;
+            --scrollbar-thumb: rgba(255,255,255,0.15);
         }
 
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; padding: 0; height: 100dvh; background: var(--bg-gradient); display: flex; justify-content: center; align-items: center; overflow: hidden; color: var(--text-dark); transition: background 0.3s ease; overscroll-behavior-y: none; }
+        
+        body { 
+            margin: 0; padding: 0; 
+            height: 100vh; /* Fallback for older Edge versions */
+            height: 100dvh; /* Modern viewport sizing */
+            background: var(--bg-gradient); 
+            display: flex; justify-content: center; align-items: center; 
+            overflow: hidden; color: var(--text-dark); 
+            transition: background 0.3s ease; 
+            overscroll-behavior-y: none; /* Prevents pull-to-refresh */
+        }
+
+        /* Modern Scrollbars for Edge/Chrome */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
 
         /* Toast Notifications */
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -52,7 +76,10 @@
         h1 { font-weight: 700; color: var(--text-dark); margin: 0 0 0.5rem 0; font-size: 1.75rem; }
         p { color: var(--text-light); margin-bottom: 1.5rem; font-size: 0.9rem; }
         .input-group { margin-bottom: 1rem; }
+        
+        /* 16px font-size prevents Edge/Safari from zooming in on input focus */
         input[type="text"] { width: 100%; padding: 1rem 1.25rem; border: 2px solid var(--border-color); border-radius: 12px; font-size: 16px; outline: none; background: var(--panel-bg); color: var(--text-dark); }
+        
         .toggle-group { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; background: var(--input-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); }
         .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -63,6 +90,7 @@
         .toggle-text { display: flex; flex-direction: column; text-align: left;}
         .toggle-title { font-weight: 600; font-size: 0.9rem; color: var(--text-dark); }
         .toggle-desc { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; }
+        
         .primary-btn { background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; width: 100%; font-weight: 600; font-size: 16px; margin-top: 0.5rem; transition: transform 0.2s; cursor: pointer;}
         .primary-btn:active { transform: scale(0.98); }
 
@@ -92,6 +120,9 @@
         .typing-dots span { display: inline-block; width: 4px; height: 4px; background-color: var(--text-light); border-radius: 50%; margin-left: 2px; animation: bounce 1.4s infinite ease-in-out both; }
         .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
         .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        /* Auto-scroll anchor */
+        #scroll-anchor { height: 1px; width: 100%; }
 
         .chat-footer { padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom)) 1rem; background: var(--panel-bg); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: flex-end; position: relative; z-index: 10; }
         .input-wrapper { flex: 1; position: relative; display: flex; align-items: center; }
@@ -167,7 +198,11 @@
         </header>
 
         <div id="messages-container">
-            <div id="messages"></div>
+            <div id="messages">
+                <!-- Messages go here -->
+                <div id="scroll-anchor"></div>
+            </div>
+            
             <!-- Modern Typing Indicator -->
             <div id="typing-area">
                 <span id="typing-user"></span>
@@ -195,10 +230,9 @@
             toast.className = `toast ${type}`;
             toast.innerHTML = type === 'error' ? `⚠️ ${message}` : `ℹ️ ${message}`;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 5000); // Clean up DOM
+            setTimeout(() => toast.remove(), 5000); 
         }
 
-        // Synthesize a subtle pop sound natively (no audio files needed!)
         function playPopSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -214,7 +248,7 @@
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
                 osc.start(ctx.currentTime);
                 osc.stop(ctx.currentTime + 0.1);
-            } catch(e) { console.log('Audio disabled by browser'); }
+            } catch(e) { /* Audio disabled by browser */ }
         }
 
         function formatTime(isoString) {
@@ -223,15 +257,28 @@
             return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
         }
 
+        function scrollToBottom(force = false) {
+            // Using scrollIntoView is much more reliable on Edge/Mobile browsers
+            document.getElementById('scroll-anchor').scrollIntoView({ behavior: force ? 'auto' : 'smooth', block: 'end' });
+        }
+
         // --- Theme Management ---
         const themeBtn = document.getElementById('theme-btn');
         const themeIcon = document.getElementById('theme-icon');
+        const metaThemeColor = document.getElementById('meta-theme-color');
+        
+        function updateThemeMeta(isDark) {
+            // Changes the actual browser address bar color to match the UI!
+            metaThemeColor.setAttribute('content', isDark ? '#111827' : '#fdfdff');
+        }
+
         const savedTheme = localStorage.getItem('vibe-theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         
         if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
             document.documentElement.setAttribute('data-theme', 'dark');
             themeIcon.textContent = '☀️';
+            updateThemeMeta(true);
         }
 
         themeBtn.addEventListener('click', () => {
@@ -240,10 +287,12 @@
                 document.documentElement.removeAttribute('data-theme');
                 localStorage.setItem('vibe-theme', 'light');
                 themeIcon.textContent = '🌙';
+                updateThemeMeta(false);
             } else {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 localStorage.setItem('vibe-theme', 'dark');
                 themeIcon.textContent = '☀️';
+                updateThemeMeta(true);
             }
         });
 
@@ -269,6 +318,7 @@
         const roomTypeDisplay = document.getElementById('room-type-display');
         const typingArea = document.getElementById('typing-area');
         const typingUser = document.getElementById('typing-user');
+        const scrollAnchor = document.getElementById('scroll-anchor');
 
         emojis.forEach(emoji => {
             const span = document.createElement('span');
@@ -286,20 +336,18 @@
         emojiBtn.onclick = (e) => {
             e.stopPropagation();
             emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid';
-            setTimeout(() => messagesDiv.scrollTop = messagesDiv.scrollHeight, 50);
+            setTimeout(() => scrollToBottom(), 50);
         };
 
         document.addEventListener('click', (e) => {
             if (e.target !== emojiBtn && !emojiPicker.contains(e.target)) emojiPicker.style.display = 'none';
         });
 
-        // Handle auto-resize AND typing indicator logic
         messageInput.addEventListener('input', function() {
             this.style.height = '48px'; 
             this.style.height = Math.min(this.scrollHeight, 120) + 'px'; 
             this.style.overflowY = this.scrollHeight > 120 ? 'auto' : 'hidden';
 
-            // Typing Indicator Debouncer
             if (socket) {
                 socket.emit('typing', true);
                 clearTimeout(typingTimeout);
@@ -307,11 +355,10 @@
             }
         });
 
+        // Aggressive scroll fix for Mobile Edge keyboard pop-up
         messageInput.addEventListener('focus', () => {
-            setTimeout(() => {
-                window.scrollTo(0, document.body.scrollHeight);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }, 300);
+            setTimeout(() => scrollToBottom(), 100);
+            setTimeout(() => scrollToBottom(), 300); // Check again after animation completes
         });
 
         joinBtn.onclick = () => {
@@ -328,7 +375,6 @@
                 usernameInput.blur();
                 roomInput.blur();
                 themeBtn.style.display = 'none'; 
-                // Initialize audio context on first user interaction so sounds work later
                 playPopSound(); 
             } else {
                 showToast("Please enter both a name and a room code.", "error");
@@ -339,13 +385,14 @@
             const text = messageInput.value.trim();
             if (text && socket) {
                 socket.emit('chat message', text);
-                socket.emit('typing', false); // stop typing immediately
+                socket.emit('typing', false);
                 clearTimeout(typingTimeout);
                 
                 messageInput.value = '';
                 messageInput.style.height = '48px';
                 messageInput.style.overflowY = 'hidden';
                 messageInput.focus();
+                scrollToBottom(true);
             }
         }
 
@@ -375,13 +422,11 @@
                 container.appendChild(timeSpan);
             }
             
-            messagesDiv.appendChild(container);
-            messagesDiv.scrollTo({ top: messagesDiv.scrollHeight, behavior: isHistoryLoad ? 'auto' : 'smooth' });
+            // Insert before the scroll anchor
+            messagesDiv.insertBefore(container, scrollAnchor);
+            scrollToBottom(isHistoryLoad);
 
-            // Play sound if not from self and not just loading old history
-            if (!isMe && !isHistoryLoad) {
-                playPopSound();
-            }
+            if (!isMe && !isHistoryLoad) playPopSound();
         }
 
         function initSocket() {
@@ -390,15 +435,18 @@
                 chatScreen.style.display = 'flex';
                 roomCodeDisplay.textContent = roomInfo.roomCode;
 
+                const note = document.createElement('div');
+                note.className = 'notification';
                 if (roomInfo.isPersistent) {
                     roomTypeDisplay.textContent = 'Persistent';
                     roomTypeDisplay.style.color = '#10b981'; 
-                    messagesDiv.innerHTML = `<div class="notification">Welcome back to ${roomInfo.roomCode}. History saved.</div>`;
+                    note.textContent = `Welcome back to ${roomInfo.roomCode}. History saved.`;
                 } else {
                     roomTypeDisplay.textContent = 'Ephemeral';
                     roomTypeDisplay.style.color = 'var(--text-light)';
-                    messagesDiv.innerHTML = `<div class="notification">Welcome to ${roomInfo.roomCode}. Chat vanishes when closed.</div>`;
+                    note.textContent = `Welcome to ${roomInfo.roomCode}. Chat vanishes when closed.`;
                 }
+                messagesDiv.insertBefore(note, scrollAnchor);
             });
 
             socket.on('chat history', (historyArray) => {
@@ -419,18 +467,16 @@
                     loginScreen.style.display = 'flex';
                     themeBtn.style.display = 'flex'; 
                     roomInput.value = '';
-                    messagesDiv.innerHTML = '';
+                    // Clear messages but keep scroll anchor
+                    messagesDiv.innerHTML = '<div id="scroll-anchor"></div>';
                     typingArea.style.opacity = '0';
                     socket.disconnect();
-                }, 2500); // Wait slightly to let them read the toast
+                }, 2500);
             });
 
             socket.on('chat message', (data) => {
                 renderMessage(data);
-                // Force hide typing indicator when they send the message
-                if (data.username !== currentUser) {
-                    typingArea.style.opacity = '0';
-                }
+                if (data.username !== currentUser) typingArea.style.opacity = '0';
             });
 
             socket.on('typing', (data) => {
@@ -440,15 +486,15 @@
                 } else {
                     typingArea.style.opacity = '0';
                 }
-                messagesDiv.scrollTo({ top: messagesDiv.scrollHeight, behavior: 'smooth' });
+                scrollToBottom();
             });
 
             socket.on('notification', (msg) => {
                 const note = document.createElement('div');
                 note.classList.add('notification');
                 note.textContent = msg;
-                messagesDiv.appendChild(note);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                messagesDiv.insertBefore(note, scrollAnchor);
+                scrollToBottom();
             });
         }
     </script>
