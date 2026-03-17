@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Base Colors */
             --primary: #6366f1;
             --primary-dark: #4f46e5;
             --accent: #ec4899;
@@ -25,7 +24,6 @@
             --input-bg: #f9fafb;
         }
 
-        /* Dark Theme Variables */
         [data-theme="dark"] {
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
             --glass-bg: rgba(31, 41, 55, 0.95);
@@ -38,90 +36,24 @@
             --input-bg: #111827;
         }
 
-        * {
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent; 
-        }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 0; height: 100dvh; background: var(--bg-gradient); display: flex; justify-content: center; align-items: center; overflow: hidden; color: var(--text-dark); transition: background 0.3s ease; overscroll-behavior-y: none; }
 
-        body {
-            margin: 0;
-            padding: 0;
-            /* 100dvh is dynamic viewport height, perfect for mobile browsers */
-            height: 100dvh; 
-            background: var(--bg-gradient);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            color: var(--text-dark);
-            transition: background 0.3s ease;
-            /* Prevent pull-to-refresh on mobile */
-            overscroll-behavior-y: none;
-        }
+        /* Toast Notifications */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--panel-bg); color: var(--text-dark); padding: 12px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid var(--border-color); font-size: 0.9rem; font-weight: 500; animation: slideDown 0.3s ease-out, fadeOut 0.3s ease-in 4.7s forwards; display: flex; align-items: center; gap: 8px; }
+        .toast.error { border-left: 4px solid #ef4444; }
+        .toast.info { border-left: 4px solid var(--primary); }
 
-        /* --- Theme Toggle Button --- */
-        .theme-toggle {
-            position: absolute;
-            top: max(1.5rem, env(safe-area-inset-top));
-            right: max(1.5rem, env(safe-area-inset-right));
-            background: var(--glass-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 44px; /* Minimum mobile touch target size */
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1000;
-            font-size: 1.25rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.2s;
-            color: var(--text-dark);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        /* --- Welcome Screen --- */
-        #login-screen {
-            background: var(--glass-bg);
-            padding: 2.5rem 2rem;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.5s ease-out;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-height: 90dvh;
-            overflow-y: auto;
-        }
-
+        .theme-toggle { position: absolute; top: max(1.5rem, env(safe-area-inset-top)); right: max(1.5rem, env(safe-area-inset-right)); background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; font-size: 1.25rem; backdrop-filter: blur(10px); transition: all 0.2s; color: var(--text-dark); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        
+        #login-screen { background: var(--glass-bg); padding: 2.5rem 2rem; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); width: 90%; max-width: 400px; text-align: center; backdrop-filter: blur(10px); animation: fadeIn 0.5s ease-out; display: flex; flex-direction: column; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 90dvh; overflow-y: auto; }
         .logo-icon { font-size: 3rem; margin-bottom: 0.5rem; display: inline-block; }
         h1 { font-weight: 700; color: var(--text-dark); margin: 0 0 0.5rem 0; font-size: 1.75rem; }
         p { color: var(--text-light); margin-bottom: 1.5rem; font-size: 0.9rem; }
-
         .input-group { margin-bottom: 1rem; }
-        input[type="text"] {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            /* 16px font size PREVENTS iOS Safari from auto-zooming on focus */
-            font-size: 16px; 
-            outline: none;
-            background: var(--panel-bg);
-            color: var(--text-dark);
-        }
-
-        /* Toggle Switch UI */
-        .toggle-group {
-            display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem;
-            background: var(--input-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color);
-        }
+        input[type="text"] { width: 100%; padding: 1rem 1.25rem; border: 2px solid var(--border-color); border-radius: 12px; font-size: 16px; outline: none; background: var(--panel-bg); color: var(--text-dark); }
+        .toggle-group { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; background: var(--input-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); }
         .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px; }
@@ -131,121 +63,65 @@
         .toggle-text { display: flex; flex-direction: column; text-align: left;}
         .toggle-title { font-weight: 600; font-size: 0.9rem; color: var(--text-dark); }
         .toggle-desc { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; }
+        .primary-btn { background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; width: 100%; font-weight: 600; font-size: 16px; margin-top: 0.5rem; transition: transform 0.2s; cursor: pointer;}
+        .primary-btn:active { transform: scale(0.98); }
 
-        .primary-btn {
-            background: var(--primary); color: white; border: none; padding: 1rem;
-            border-radius: 12px; width: 100%; font-weight: 600; font-size: 16px; margin-top: 0.5rem;
-        }
-
-        #login-error { color: #ef4444; font-size: 0.85rem; margin-bottom: 1rem; display: none; background: rgba(239, 68, 68, 0.1); padding: 0.5rem; border-radius: 8px; }
-
-        /* --- Chat Interface --- */
-        #chat-screen {
-            display: none;
-            width: 95%; max-width: 900px; height: 90dvh;
-            background: var(--glass-bg); border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
-            flex-direction: column; overflow: hidden;
-            animation: slideUp 0.4s ease-out;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .chat-header {
-            padding: max(1rem, env(safe-area-inset-top)) 1.5rem 1rem 1.5rem;
-            background: var(--panel-bg); border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center; z-index: 10;
-        }
-
+        #chat-screen { display: none; width: 95%; max-width: 900px; height: 90dvh; background: var(--glass-bg); border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); flex-direction: column; overflow: hidden; animation: slideUp 0.4s ease-out; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .chat-header { padding: max(1rem, env(safe-area-inset-top)) 1.5rem 1rem 1.5rem; background: var(--panel-bg); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .user-info { display: flex; align-items: center; gap: 10px; }
-        .status-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; }
-
-        #messages {
-            flex: 1; padding: 1.25rem 1.5rem; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 1rem; background: var(--chat-bg);
-            -webkit-overflow-scrolling: touch; 
-        }
-
+        .status-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
+        
+        #messages-container { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; background: var(--chat-bg);}
+        #messages { flex: 1; padding: 1.25rem 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; -webkit-overflow-scrolling: touch; scroll-behavior: smooth;}
+        
         .msg-container { display: flex; flex-direction: column; max-width: 80%; }
         .msg-container.me { align-self: flex-end; align-items: flex-end; }
         .msg-container.other { align-self: flex-start; }
         .username-label { font-size: 0.75rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px; margin-left: 8px; }
-
-        .bubble {
-            padding: 0.75rem 1rem; border-radius: 18px; font-size: 0.95rem; line-height: 1.4;
-            position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); word-wrap: break-word; white-space: pre-wrap;
-        }
+        .bubble { padding: 0.75rem 1rem; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); word-wrap: break-word; white-space: pre-wrap; }
         .other .bubble { background: var(--other-bg); color: var(--text-dark); border-bottom-left-radius: 4px; }
         .me .bubble { background: var(--me-bg); color: white; border-bottom-right-radius: 4px; }
+        .timestamp { font-size: 0.65rem; color: var(--text-light); margin-top: 4px; opacity: 0.8; }
+        .me .timestamp { padding-right: 8px; }
+        .other .timestamp { padding-left: 8px; }
 
-        .notification {
-            align-self: center; background: var(--other-bg); padding: 0.4rem 1rem; border-radius: 20px;
-            font-size: 0.75rem; color: var(--text-light); font-weight: 500; text-align: center; margin: 0.5rem 0;
-        }
+        .notification { align-self: center; background: var(--other-bg); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.75rem; color: var(--text-light); font-weight: 500; text-align: center; margin: 0.5rem 0; }
 
-        /* Footer & Input */
-        .chat-footer {
-            padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom)) 1rem;
-            background: var(--panel-bg); border-top: 1px solid var(--border-color);
-            display: flex; gap: 10px; align-items: flex-end; position: relative; z-index: 10;
-        }
+        /* Typing Indicator Area */
+        #typing-area { height: 24px; padding: 0 1.5rem; background: var(--chat-bg); font-size: 0.8rem; color: var(--text-light); font-weight: 500; display: flex; align-items: center; transition: opacity 0.2s; opacity: 0; }
+        .typing-dots span { display: inline-block; width: 4px; height: 4px; background-color: var(--text-light); border-radius: 50%; margin-left: 2px; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
 
+        .chat-footer { padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom)) 1rem; background: var(--panel-bg); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: flex-end; position: relative; z-index: 10; }
         .input-wrapper { flex: 1; position: relative; display: flex; align-items: center; }
-
-        #message-input {
-            width: 100%; padding: 0.75rem 3rem 0.75rem 1rem; border: 1px solid var(--border-color);
-            border-radius: 20px; font-size: 16px; outline: none; background: var(--input-bg);
-            color: var(--text-dark); resize: none; overflow-y: hidden; 
-            min-height: 48px; max-height: 120px; line-height: 1.4;
-        }
-
-        .emoji-trigger {
-            position: absolute; right: 8px; bottom: 4px; cursor: pointer;
-            width: 40px; height: 40px; /* Better touch target */
-            display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
-        }
-
-        /* Emoji Picker Panel */
-        #emoji-picker {
-            display: none; position: absolute; bottom: 80px; right: 1rem;
-            background: var(--panel-bg); border: 1px solid var(--border-color);
-            border-radius: 16px; box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
-            padding: 10px; grid-template-columns: repeat(6, 1fr); gap: 6px; z-index: 100;
-        }
-        .emoji-item {
-            cursor: pointer; font-size: 1.5rem; padding: 8px 4px; border-radius: 8px; text-align: center;
-        }
+        #message-input { width: 100%; padding: 0.75rem 3rem 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 20px; font-size: 16px; outline: none; background: var(--input-bg); color: var(--text-dark); resize: none; overflow-y: hidden; min-height: 48px; max-height: 120px; line-height: 1.4; }
+        .emoji-trigger { position: absolute; right: 8px; bottom: 4px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        
+        #emoji-picker { display: none; position: absolute; bottom: 80px; right: 1rem; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 -5px 25px rgba(0,0,0,0.1); padding: 10px; grid-template-columns: repeat(6, 1fr); gap: 6px; z-index: 100; }
+        .emoji-item { cursor: pointer; font-size: 1.5rem; padding: 8px 4px; border-radius: 8px; text-align: center; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px) translateX(-50%); } to { opacity: 1; transform: translateY(0) translateX(-50%); } }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        /* --- Mobile Specific Overrides --- */
         @media (max-width: 600px) {
             body { border-radius: 0; }
-            #chat-screen {
-                width: 100%; height: 100dvh; border-radius: 0; border: none;
-            }
-            #login-screen {
-                width: 100%; height: 100dvh; border-radius: 0; justify-content: center; border: none;
-                padding-top: max(2rem, env(safe-area-inset-top));
-            }
-
-            /* Redesign Emoji Picker as a Mobile Bottom Sheet */
-            #emoji-picker {
-                bottom: 0; right: 0; width: 100%; max-width: 100%; border-radius: 20px 20px 0 0;
-                padding: 1.5rem 1rem max(1.5rem, env(safe-area-inset-bottom)) 1rem;
-                grid-template-columns: repeat(8, 1fr);
-                box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
-                border-bottom: none; border-left: none; border-right: none;
-                animation: slideUp 0.2s ease-out;
-            }
-
+            #chat-screen { width: 100%; height: 100dvh; border-radius: 0; border: none; }
+            #login-screen { width: 100%; height: 100dvh; border-radius: 0; justify-content: center; border: none; padding-top: max(2rem, env(safe-area-inset-top)); }
+            #emoji-picker { bottom: 0; right: 0; width: 100%; max-width: 100%; border-radius: 20px 20px 0 0; padding: 1.5rem 1rem max(1.5rem, env(safe-area-inset-bottom)) 1rem; grid-template-columns: repeat(8, 1fr); box-shadow: 0 -10px 40px rgba(0,0,0,0.15); border-bottom: none; border-left: none; border-right: none; animation: slideUp 0.2s ease-out; }
             .msg-container { max-width: 90%; }
             #send-btn { height: 48px; padding: 0 1.25rem; }
             .theme-toggle { top: max(1rem, env(safe-area-inset-top)); right: 1rem; }
+            .toast { width: 90%; text-align: center; justify-content: center;}
         }
     </style>
 </head>
 <body>
+
+    <div id="toast-container"></div>
 
     <button class="theme-toggle" id="theme-btn" aria-label="Toggle Theme">
         <span id="theme-icon">🌙</span>
@@ -276,7 +152,6 @@
             </div>
         </div>
 
-        <div id="login-error"></div>
         <button id="join-btn" class="primary-btn">Join Room</button>
     </div>
 
@@ -291,7 +166,14 @@
             </div>
         </header>
 
-        <div id="messages"></div>
+        <div id="messages-container">
+            <div id="messages"></div>
+            <!-- Modern Typing Indicator -->
+            <div id="typing-area">
+                <span id="typing-user"></span>
+                <div class="typing-dots"><span></span><span></span><span></span></div>
+            </div>
+        </div>
 
         <div id="emoji-picker"></div>
 
@@ -306,10 +188,44 @@
 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script>
+        // --- Utilities & Custom UI ---
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = type === 'error' ? `⚠️ ${message}` : `ℹ️ ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000); // Clean up DOM
+        }
+
+        // Synthesize a subtle pop sound natively (no audio files needed!)
+        function playPopSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if(ctx.state === 'suspended') ctx.resume();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.1);
+            } catch(e) { console.log('Audio disabled by browser'); }
+        }
+
+        function formatTime(isoString) {
+            if (!isoString) return '';
+            const date = new Date(isoString);
+            return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        }
+
         // --- Theme Management ---
         const themeBtn = document.getElementById('theme-btn');
         const themeIcon = document.getElementById('theme-icon');
-        
         const savedTheme = localStorage.getItem('vibe-theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         
@@ -335,7 +251,7 @@
         let socket;
         let currentUser = '';
         let currentRoom = '';
-        // Expanded mobile-friendly emoji list
+        let typingTimeout;
         const emojis = ['😀', '😂', '😍', '🔥', '👍', '🎉', '👋', '👀', '✨', '🙌', '💯', '🚀', '💔', '😭', '💀', '👽', '🥺', '😎', '🙏', '💡', '✅', '❤️', '🤔', '🥶'];
 
         const loginScreen = document.getElementById('login-screen');
@@ -343,7 +259,6 @@
         const usernameInput = document.getElementById('username-input');
         const roomInput = document.getElementById('room-input');
         const persistentToggle = document.getElementById('persistent-toggle');
-        const loginError = document.getElementById('login-error');
         const joinBtn = document.getElementById('join-btn');
         const messagesDiv = document.getElementById('messages');
         const messageInput = document.getElementById('message-input');
@@ -352,8 +267,9 @@
         const emojiPicker = document.getElementById('emoji-picker');
         const roomCodeDisplay = document.getElementById('room-code-display');
         const roomTypeDisplay = document.getElementById('room-type-display');
+        const typingArea = document.getElementById('typing-area');
+        const typingUser = document.getElementById('typing-user');
 
-        // Populate Emoji Picker
         emojis.forEach(emoji => {
             const span = document.createElement('span');
             span.classList.add('emoji-item');
@@ -370,27 +286,27 @@
         emojiBtn.onclick = (e) => {
             e.stopPropagation();
             emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid';
-            // Scroll to bottom just in case the bottom sheet covers recent messages
             setTimeout(() => messagesDiv.scrollTop = messagesDiv.scrollHeight, 50);
         };
 
         document.addEventListener('click', (e) => {
-            if (e.target !== emojiBtn && !emojiPicker.contains(e.target)) {
-                emojiPicker.style.display = 'none';
-            }
+            if (e.target !== emojiBtn && !emojiPicker.contains(e.target)) emojiPicker.style.display = 'none';
         });
 
+        // Handle auto-resize AND typing indicator logic
         messageInput.addEventListener('input', function() {
             this.style.height = '48px'; 
             this.style.height = Math.min(this.scrollHeight, 120) + 'px'; 
-            if (this.scrollHeight > 120) {
-                this.style.overflowY = 'auto'; 
-            } else {
-                this.style.overflowY = 'hidden';
+            this.style.overflowY = this.scrollHeight > 120 ? 'auto' : 'hidden';
+
+            // Typing Indicator Debouncer
+            if (socket) {
+                socket.emit('typing', true);
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => socket.emit('typing', false), 1500);
             }
         });
 
-        // Ensure we scroll to the bottom when the keyboard pops up on mobile
         messageInput.addEventListener('focus', () => {
             setTimeout(() => {
                 window.scrollTo(0, document.body.scrollHeight);
@@ -404,21 +320,18 @@
             const isPersistent = persistentToggle.checked;
             
             if (name && room) {
-                loginError.style.display = 'none';
                 currentUser = name;
                 currentRoom = room;
-                
                 socket = io();
                 initSocket(); 
-                
                 socket.emit('join', { username: currentUser, roomCode: currentRoom, isPersistent: isPersistent });
-                
                 usernameInput.blur();
                 roomInput.blur();
-                themeBtn.style.display = 'none'; // Hide theme toggle inside chat to save space
+                themeBtn.style.display = 'none'; 
+                // Initialize audio context on first user interaction so sounds work later
+                playPopSound(); 
             } else {
-                loginError.textContent = "Please enter both a name and a room code.";
-                loginError.style.display = 'block';
+                showToast("Please enter both a name and a room code.", "error");
             }
         };
 
@@ -426,6 +339,9 @@
             const text = messageInput.value.trim();
             if (text && socket) {
                 socket.emit('chat message', text);
+                socket.emit('typing', false); // stop typing immediately
+                clearTimeout(typingTimeout);
+                
                 messageInput.value = '';
                 messageInput.style.height = '48px';
                 messageInput.style.overflowY = 'hidden';
@@ -435,7 +351,7 @@
 
         sendBtn.onclick = sendMessage;
 
-        function renderMessage(data) {
+        function renderMessage(data, isHistoryLoad = false) {
             const isMe = data.username === currentUser;
             const container = document.createElement('div');
             container.classList.add('msg-container', isMe ? 'me' : 'other');
@@ -450,11 +366,22 @@
             const bubble = document.createElement('div');
             bubble.classList.add('bubble');
             bubble.textContent = data.text;
-            
             container.appendChild(bubble);
-            messagesDiv.appendChild(container);
+
+            if (data.timestamp) {
+                const timeSpan = document.createElement('div');
+                timeSpan.className = 'timestamp';
+                timeSpan.textContent = formatTime(data.timestamp);
+                container.appendChild(timeSpan);
+            }
             
-            messagesDiv.scrollTo({ top: messagesDiv.scrollHeight, behavior: 'smooth' });
+            messagesDiv.appendChild(container);
+            messagesDiv.scrollTo({ top: messagesDiv.scrollHeight, behavior: isHistoryLoad ? 'auto' : 'smooth' });
+
+            // Play sound if not from self and not just loading old history
+            if (!isMe && !isHistoryLoad) {
+                playPopSound();
+            }
         }
 
         function initSocket() {
@@ -466,39 +393,54 @@
                 if (roomInfo.isPersistent) {
                     roomTypeDisplay.textContent = 'Persistent';
                     roomTypeDisplay.style.color = '#10b981'; 
-                    messagesDiv.innerHTML = `<div class="notification">Welcome back to ${roomInfo.roomCode}. This chat history is saved.</div>`;
+                    messagesDiv.innerHTML = `<div class="notification">Welcome back to ${roomInfo.roomCode}. History saved.</div>`;
                 } else {
                     roomTypeDisplay.textContent = 'Ephemeral';
                     roomTypeDisplay.style.color = 'var(--text-light)';
-                    messagesDiv.innerHTML = `<div class="notification">Welcome to ${roomInfo.roomCode}. This chat will vanish when closed.</div>`;
+                    messagesDiv.innerHTML = `<div class="notification">Welcome to ${roomInfo.roomCode}. Chat vanishes when closed.</div>`;
                 }
             });
 
             socket.on('chat history', (historyArray) => {
-                historyArray.forEach(msg => renderMessage(msg));
+                historyArray.forEach(msg => renderMessage(msg, true));
             });
 
             socket.on('room full', (roomCode) => {
-                loginError.textContent = `Room ${roomCode} is full (max 2). Try another code.`;
-                loginError.style.display = 'block';
+                showToast(`Room ${roomCode} is full (max 2). Try another code.`, "error");
                 socket.disconnect();
             });
 
             socket.on('room closed', (msg) => {
                 messageInput.blur(); 
+                showToast(msg, "error");
+                
                 setTimeout(() => {
-                    alert(msg);
                     chatScreen.style.display = 'none';
                     loginScreen.style.display = 'flex';
-                    themeBtn.style.display = 'flex'; // Bring back theme toggle
+                    themeBtn.style.display = 'flex'; 
                     roomInput.value = '';
                     messagesDiv.innerHTML = '';
+                    typingArea.style.opacity = '0';
                     socket.disconnect();
-                }, 100);
+                }, 2500); // Wait slightly to let them read the toast
             });
 
             socket.on('chat message', (data) => {
                 renderMessage(data);
+                // Force hide typing indicator when they send the message
+                if (data.username !== currentUser) {
+                    typingArea.style.opacity = '0';
+                }
+            });
+
+            socket.on('typing', (data) => {
+                if (data.isTyping) {
+                    typingUser.textContent = `${data.username} is typing`;
+                    typingArea.style.opacity = '1';
+                } else {
+                    typingArea.style.opacity = '0';
+                }
+                messagesDiv.scrollTo({ top: messagesDiv.scrollHeight, behavior: 'smooth' });
             });
 
             socket.on('notification', (msg) => {
