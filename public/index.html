@@ -45,62 +45,70 @@
             --scrollbar-thumb: rgba(255,255,255,0.15);
         }
 
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
         
+        /* Performance: Remove 300ms tap delay on mobile */
+        button, a, input, textarea, .emoji-item, .theme-toggle, .slider {
+            touch-action: manipulation;
+        }
+
         body { 
             margin: 0; padding: 0; 
-            height: 100vh; /* Fallback for older Edge versions */
-            height: 100dvh; /* Modern viewport sizing */
+            height: 100vh; height: 100dvh; 
             background: var(--bg-gradient); 
             display: flex; justify-content: center; align-items: center; 
             overflow: hidden; color: var(--text-dark); 
             transition: background 0.3s ease; 
-            overscroll-behavior-y: none; /* Prevents pull-to-refresh */
+            overscroll-behavior-y: none; 
         }
 
-        /* Modern Scrollbars for Edge/Chrome */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
 
-        /* Toast Notifications */
-        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--panel-bg); color: var(--text-dark); padding: 12px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid var(--border-color); font-size: 0.9rem; font-weight: 500; animation: slideDown 0.3s ease-out, fadeOut 0.3s ease-in 4.7s forwards; display: flex; align-items: center; gap: 8px; }
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { background: var(--panel-bg); color: var(--text-dark); padding: 12px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid var(--border-color); font-size: 0.9rem; font-weight: 500; animation: slideDown 0.3s ease-out, fadeOut 0.3s ease-in 4.7s forwards; display: flex; align-items: center; gap: 8px; will-change: transform, opacity; }
         .toast.error { border-left: 4px solid #ef4444; }
         .toast.info { border-left: 4px solid var(--primary); }
 
-        .theme-toggle { position: absolute; top: max(1.5rem, env(safe-area-inset-top)); right: max(1.5rem, env(safe-area-inset-right)); background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; font-size: 1.25rem; backdrop-filter: blur(10px); transition: all 0.2s; color: var(--text-dark); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .theme-toggle { position: absolute; top: max(1.5rem, env(safe-area-inset-top)); right: max(1.5rem, env(safe-area-inset-right)); background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; font-size: 1.25rem; backdrop-filter: blur(10px); transition: transform 0.2s; color: var(--text-dark); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); will-change: transform; }
+        .theme-toggle:active { transform: scale(0.92); }
         
-        #login-screen { background: var(--glass-bg); padding: 2.5rem 2rem; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); width: 90%; max-width: 400px; text-align: center; backdrop-filter: blur(10px); animation: fadeIn 0.5s ease-out; display: flex; flex-direction: column; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 90dvh; overflow-y: auto; }
+        #login-screen { background: var(--glass-bg); padding: 2.5rem 2rem; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); width: 90%; max-width: 400px; text-align: center; backdrop-filter: blur(10px); animation: fadeIn 0.4s ease-out; display: flex; flex-direction: column; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 90dvh; overflow-y: auto; will-change: transform, opacity; }
         .logo-icon { font-size: 3rem; margin-bottom: 0.5rem; display: inline-block; }
         h1 { font-weight: 700; color: var(--text-dark); margin: 0 0 0.5rem 0; font-size: 1.75rem; }
         p { color: var(--text-light); margin-bottom: 1.5rem; font-size: 0.9rem; }
         .input-group { margin-bottom: 1rem; }
         
-        /* 16px font-size prevents Edge/Safari from zooming in on input focus */
-        input[type="text"] { width: 100%; padding: 1rem 1.25rem; border: 2px solid var(--border-color); border-radius: 12px; font-size: 16px; outline: none; background: var(--panel-bg); color: var(--text-dark); }
+        input[type="text"] { width: 100%; padding: 1rem 1.25rem; border: 2px solid var(--border-color); border-radius: 12px; font-size: 16px; outline: none; background: var(--panel-bg); color: var(--text-dark); transition: border-color 0.2s; }
+        input[type="text"]:focus { border-color: var(--primary); }
         
         .toggle-group { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; background: var(--input-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); }
         .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: transform .3s cubic-bezier(0.4, 0.0, 0.2, 1); border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.3); will-change: transform; }
         input:checked + .slider { background-color: #10b981; }
         input:checked + .slider:before { transform: translateX(20px); }
         .toggle-text { display: flex; flex-direction: column; text-align: left;}
         .toggle-title { font-weight: 600; font-size: 0.9rem; color: var(--text-dark); }
         .toggle-desc { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; }
         
-        .primary-btn { background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; width: 100%; font-weight: 600; font-size: 16px; margin-top: 0.5rem; transition: transform 0.2s; cursor: pointer;}
-        .primary-btn:active { transform: scale(0.98); }
+        .primary-btn { background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 12px; width: 100%; font-weight: 600; font-size: 16px; margin-top: 0.5rem; transition: transform 0.2s, background 0.2s; cursor: pointer; will-change: transform; }
+        .primary-btn:active { transform: scale(0.97); }
 
-        #chat-screen { display: none; width: 95%; max-width: 900px; height: 90dvh; background: var(--glass-bg); border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); flex-direction: column; overflow: hidden; animation: slideUp 0.4s ease-out; border: 1px solid rgba(255, 255, 255, 0.1); }
+        #chat-screen { display: none; width: 95%; max-width: 900px; height: 90dvh; background: var(--glass-bg); border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); flex-direction: column; overflow: hidden; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid rgba(255, 255, 255, 0.1); will-change: transform, opacity; }
         .chat-header { padding: max(1rem, env(safe-area-inset-top)) 1.5rem 1rem 1.5rem; background: var(--panel-bg); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .user-info { display: flex; align-items: center; gap: 10px; }
         .status-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
         
-        #messages-container { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; background: var(--chat-bg);}
-        #messages { flex: 1; padding: 1.25rem 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; -webkit-overflow-scrolling: touch; scroll-behavior: smooth;}
+        /* Performance: contain: content isolates layout and paint calculations */
+        #messages-container { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; background: var(--chat-bg); contain: content; }
+        #messages { flex: 1; padding: 1.25rem 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; -webkit-overflow-scrolling: touch; }
         
         .msg-container { display: flex; flex-direction: column; max-width: 80%; }
         .msg-container.me { align-self: flex-end; align-items: flex-end; }
@@ -115,22 +123,23 @@
 
         .notification { align-self: center; background: var(--other-bg); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.75rem; color: var(--text-light); font-weight: 500; text-align: center; margin: 0.5rem 0; }
 
-        /* Typing Indicator Area */
-        #typing-area { height: 24px; padding: 0 1.5rem; background: var(--chat-bg); font-size: 0.8rem; color: var(--text-light); font-weight: 500; display: flex; align-items: center; transition: opacity 0.2s; opacity: 0; }
+        #typing-area { height: 24px; padding: 0 1.5rem; background: var(--chat-bg); font-size: 0.8rem; color: var(--text-light); font-weight: 500; display: flex; align-items: center; transition: opacity 0.2s; opacity: 0; will-change: opacity; }
         .typing-dots span { display: inline-block; width: 4px; height: 4px; background-color: var(--text-light); border-radius: 50%; margin-left: 2px; animation: bounce 1.4s infinite ease-in-out both; }
         .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
         .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
         
-        /* Auto-scroll anchor */
-        #scroll-anchor { height: 1px; width: 100%; }
+        #scroll-anchor { height: 1px; width: 100%; flex-shrink: 0; }
 
         .chat-footer { padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom)) 1rem; background: var(--panel-bg); border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: flex-end; position: relative; z-index: 10; }
         .input-wrapper { flex: 1; position: relative; display: flex; align-items: center; }
-        #message-input { width: 100%; padding: 0.75rem 3rem 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 20px; font-size: 16px; outline: none; background: var(--input-bg); color: var(--text-dark); resize: none; overflow-y: hidden; min-height: 48px; max-height: 120px; line-height: 1.4; }
-        .emoji-trigger { position: absolute; right: 8px; bottom: 4px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        #message-input { width: 100%; padding: 0.75rem 3rem 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 20px; font-size: 16px; outline: none; background: var(--input-bg); color: var(--text-dark); resize: none; overflow-y: hidden; min-height: 48px; max-height: 120px; line-height: 1.4; transition: border-color 0.2s; will-change: height; }
+        #message-input:focus { border-color: var(--primary); }
+        .emoji-trigger { position: absolute; right: 4px; bottom: 4px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; border-radius: 50%; transition: background 0.2s; }
+        .emoji-trigger:active { background: var(--other-bg); }
         
-        #emoji-picker { display: none; position: absolute; bottom: 80px; right: 1rem; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 -5px 25px rgba(0,0,0,0.1); padding: 10px; grid-template-columns: repeat(6, 1fr); gap: 6px; z-index: 100; }
-        .emoji-item { cursor: pointer; font-size: 1.5rem; padding: 8px 4px; border-radius: 8px; text-align: center; }
+        #emoji-picker { display: none; position: absolute; bottom: 80px; right: 1rem; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 -5px 25px rgba(0,0,0,0.1); padding: 10px; grid-template-columns: repeat(6, 1fr); gap: 6px; z-index: 100; will-change: transform, opacity; }
+        .emoji-item { cursor: pointer; font-size: 1.5rem; padding: 8px 4px; border-radius: 8px; text-align: center; transition: background 0.1s, transform 0.1s; will-change: transform; }
+        .emoji-item:active { background: var(--other-bg); transform: scale(0.9); }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -142,7 +151,7 @@
             body { border-radius: 0; }
             #chat-screen { width: 100%; height: 100dvh; border-radius: 0; border: none; }
             #login-screen { width: 100%; height: 100dvh; border-radius: 0; justify-content: center; border: none; padding-top: max(2rem, env(safe-area-inset-top)); }
-            #emoji-picker { bottom: 0; right: 0; width: 100%; max-width: 100%; border-radius: 20px 20px 0 0; padding: 1.5rem 1rem max(1.5rem, env(safe-area-inset-bottom)) 1rem; grid-template-columns: repeat(8, 1fr); box-shadow: 0 -10px 40px rgba(0,0,0,0.15); border-bottom: none; border-left: none; border-right: none; animation: slideUp 0.2s ease-out; }
+            #emoji-picker { bottom: 0; right: 0; width: 100%; max-width: 100%; border-radius: 20px 20px 0 0; padding: 1.5rem 1rem max(1.5rem, env(safe-area-inset-bottom)) 1rem; grid-template-columns: repeat(8, 1fr); box-shadow: 0 -10px 40px rgba(0,0,0,0.15); border-bottom: none; border-left: none; border-right: none; animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
             .msg-container { max-width: 90%; }
             #send-btn { height: 48px; padding: 0 1.25rem; }
             .theme-toggle { top: max(1rem, env(safe-area-inset-top)); right: 1rem; }
@@ -199,11 +208,9 @@
 
         <div id="messages-container">
             <div id="messages">
-                <!-- Messages go here -->
                 <div id="scroll-anchor"></div>
             </div>
             
-            <!-- Modern Typing Indicator -->
             <div id="typing-area">
                 <span id="typing-user"></span>
                 <div class="typing-dots"><span></span><span></span><span></span></div>
@@ -258,8 +265,12 @@
         }
 
         function scrollToBottom(force = false) {
-            // Using scrollIntoView is much more reliable on Edge/Mobile browsers
-            document.getElementById('scroll-anchor').scrollIntoView({ behavior: force ? 'auto' : 'smooth', block: 'end' });
+            requestAnimationFrame(() => {
+                document.getElementById('scroll-anchor').scrollIntoView({ 
+                    behavior: force ? 'auto' : 'smooth', 
+                    block: 'end' 
+                });
+            });
         }
 
         // --- Theme Management ---
@@ -268,7 +279,6 @@
         const metaThemeColor = document.getElementById('meta-theme-color');
         
         function updateThemeMeta(isDark) {
-            // Changes the actual browser address bar color to match the UI!
             metaThemeColor.setAttribute('content', isDark ? '#111827' : '#fdfdff');
         }
 
@@ -336,16 +346,28 @@
         emojiBtn.onclick = (e) => {
             e.stopPropagation();
             emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid';
-            setTimeout(() => scrollToBottom(), 50);
+            if(emojiPicker.style.display === 'grid') scrollToBottom();
         };
 
         document.addEventListener('click', (e) => {
             if (e.target !== emojiBtn && !emojiPicker.contains(e.target)) emojiPicker.style.display = 'none';
         });
 
+        // Performance: Throttle Layout Thrashing on TextArea Resize
+        let lastInputHeight = 48;
         messageInput.addEventListener('input', function() {
+            // Calculate height purely logically first
             this.style.height = '48px'; 
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px'; 
+            const newHeight = Math.min(this.scrollHeight, 120);
+            
+            // Only update DOM style if value ACTUALLY changed
+            if (newHeight !== lastInputHeight) {
+                this.style.height = newHeight + 'px';
+                lastInputHeight = newHeight;
+                scrollToBottom(true);
+            } else {
+                this.style.height = lastInputHeight + 'px';
+            }
             this.style.overflowY = this.scrollHeight > 120 ? 'auto' : 'hidden';
 
             if (socket) {
@@ -355,11 +377,13 @@
             }
         });
 
-        // Aggressive scroll fix for Mobile Edge keyboard pop-up
-        messageInput.addEventListener('focus', () => {
-            setTimeout(() => scrollToBottom(), 100);
-            setTimeout(() => scrollToBottom(), 300); // Check again after animation completes
+        // Performance: Native ResizeObserver to detect keyboard popups cleanly
+        const resizeObserver = new ResizeObserver(() => {
+            if (chatScreen.style.display === 'flex') {
+                scrollToBottom(true);
+            }
         });
+        resizeObserver.observe(chatScreen);
 
         joinBtn.onclick = () => {
             const name = usernameInput.value.trim();
@@ -390,6 +414,7 @@
                 
                 messageInput.value = '';
                 messageInput.style.height = '48px';
+                lastInputHeight = 48;
                 messageInput.style.overflowY = 'hidden';
                 messageInput.focus();
                 scrollToBottom(true);
@@ -422,7 +447,6 @@
                 container.appendChild(timeSpan);
             }
             
-            // Insert before the scroll anchor
             messagesDiv.insertBefore(container, scrollAnchor);
             scrollToBottom(isHistoryLoad);
 
@@ -467,7 +491,6 @@
                     loginScreen.style.display = 'flex';
                     themeBtn.style.display = 'flex'; 
                     roomInput.value = '';
-                    // Clear messages but keep scroll anchor
                     messagesDiv.innerHTML = '<div id="scroll-anchor"></div>';
                     typingArea.style.opacity = '0';
                     socket.disconnect();
