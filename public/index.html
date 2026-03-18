@@ -356,7 +356,7 @@
             if (name && room) {
                 currentUser = name;
                 currentRoom = room;
-                socket = io();
+                socket = io('https://vibe-code-chat.onrender.com');
                 initSocket(); 
                 socket.emit('join', { username: currentUser, roomCode: currentRoom, isPersistent: isPersistent });
                 usernameInput.blur();
